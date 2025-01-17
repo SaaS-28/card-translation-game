@@ -85,6 +85,10 @@ class GameUI:
 
         self.language_entry = tk.Entry(self.master, font=("Helvetica", 14))
         self.language_entry.pack(pady=5)
+        self.language_entry.focus_set()
+
+        vcmd = (self.master.register(self.validate_input), "%P")
+        self.language_entry.config(validate="key", validatecommand=vcmd)
 
         tk.Button(self.master, text="Upload Word List", command=self.upload_word_list, font=("Helvetica", 14)).pack(pady=10)
 
@@ -103,7 +107,10 @@ class GameUI:
         tk.Label(self.master, text="Enter the new namee for the profile:", font=("Helvetica", 14)).pack(pady=5)
         self.language_entry = tk.Entry(self.master, font=("Helvetica", 14))
         self.language_entry.pack(pady=5)
+        self.language_entry.focus_set()
 
+        vcmd = (self.master.register(self.validate_input), "%P")
+        self.language_entry.config(validate="key", validatecommand=vcmd)
 
         tk.Button(self.master, text="Upload New Word List", command=self.upload_word_list, font=("Helvetica", 14)).pack(pady=10)
 
@@ -113,12 +120,22 @@ class GameUI:
         tk.Button(self.master, text="Save Profile", command=lambda: self.save_profile(True, self.language_entry.get() or name, name), font=("Helvetica", 14)).pack(pady=20)
         tk.Button(self.master, text="Back", command=self.show_home_screen, font=("Helvetica", 14)).pack(pady=5)
 
+    def validate_input(self, value):
+        if value.isalnum() or value == "":
+            return True
+        else:
+            self.file_label.config(text="Only letters and numbers are allowed!!!", fg="red")
+            return False
+
     # Upload the "words.txt" file
     def upload_word_list(self):
         file_path = filedialog.askopenfilename()
         if file_path:
-            self.file_label.config(text=f"Uploaded: {file_path}")
-            self.word_list_path = file_path
+            if not file_path.lower().endswith('.txt'):
+                self.file_label.config(text="Make sure to upload only files with '.txt' extension!!!", fg="red")
+            else:
+                self.file_label.config(text=f"Uploaded: {file_path}", fg="black")
+                self.word_list_path = file_path
 
     # Saves the profile created
     def save_profile(self, edit=False, name=None, previous_name=None):
@@ -128,7 +145,6 @@ class GameUI:
             if name:
                 language = name
             else:
-                print("Error: No name provided for editing")
                 return  # Exit the function if no name is provided during edit
 
         if previous_name is not None:
@@ -147,6 +163,8 @@ class GameUI:
                 self.profiles[language] = {"word_list": self.word_list_path}
                 self.save_profiles()
                 self.show_home_screen()
+            else:
+                self.file_label.config(text="Make sure to upload a list before saving the profile!!", fg="red")
 
     # Select an existing profile and start the game
     def select_profile(self, profile_name):

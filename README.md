@@ -1,6 +1,6 @@
 # Python translation game
 
-In this game, you can **create profiles** for the languages you want to learn and **upload lists of words** to translate. 
+In this game, you can **create profiles** for the languages you want to learn and **upload lists of words** to translate.
 You can also **update the profile name** or **re-upload the word lists** at any time.
 
 ## How to Play:
